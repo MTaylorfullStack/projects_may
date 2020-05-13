@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pin Dropper!</title>
+    <style>
+        #map {
+            height: 100%;
+        }
+
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Enter Your Address and It Will Appear on the Map!</h1>
+    <div id="map"></div>
+    <h3>Recent Address: <span id='user_address'>{{request.session.address}}</span></h3>
+    <h2>Input your Address:</h2>
+    <form action="/process" method=POST>
+        {% csrf_token %}
+        <input type="text" name='location'>
+        <input type="submit" value='Drop Pin'>
+    </form>
+    <script>
+        var map;
+
+        function initMap() {
+            var location = { lat: -25.344, lng: 131.036 };
+            var geocoder = new google.maps.Geocoder();
+            var user_address = document.getElementById('user_address').innerHTML;
+            console.log(user_address)
+            geocoder.geocode({ address: user_address }, function (results, status) {
+                if (status == 'OK') {
+                    console.log(results);
+                    var latLng = results[0].geometry.location;
+                    console.log(latLng);
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: latLng,
+                        zoom: 8
+                    });
+                    var marker = new google.maps.Marker({ position: latLng, map: map });
+                } else {
+                    alert("ERROR: " + status);
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: location,
+                        zoom: 8
+                    });
+                    var marker = new google.maps.Marker({ position: location, map: map });
+                }
+            })
+            // map = new google.maps.Map(document.getElementById('map'), {
+            //     center: location,
+            //     zoom: 8
+            // });
+            // var marker = new google.maps.Marker({ position: location, map: map });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyByD6hJ28Zum_ecuHd3E-wTAva425pztrA&callback=initMap"
+        async defer></script>
+</body>
+
+</html>
